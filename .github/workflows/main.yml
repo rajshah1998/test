@@ -3,7 +3,7 @@ name: Manual Build
 on:
   workflow_dispatch:
     branches:
-      - 'master'
+      - main
   # pull_request:
   #   branches:
   #     - 'rs_lambda_*'  # Adjust this pattern to match your rc_ branch naming convention
