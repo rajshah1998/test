@@ -14,3 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: LOGIN TO AWS Account
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::12121212:role/CodeBuildFromGitHub
+          aws-region: us-east-1
