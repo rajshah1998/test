@@ -7,6 +7,17 @@ on:
   #     - 'rs_lambda_*'  # Adjust this pattern to match your rc_ branch naming convention
   
 jobs: 
+  branch_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Branch
+        id: branch_check
+        run: |
+          branch_name="${{ github.ref_name }}"
+          if [[ ! "$branch_name" =~ ^refs/heads/rc_ ]]; then
+            echo "Branch name '$branch_name' does not match the expected pattern (rc_)."
+            exit 1
+          fi
   build:
     runs-on: ubuntu-latest
     permissions:
