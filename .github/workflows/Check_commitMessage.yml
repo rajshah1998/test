@@ -33,6 +33,8 @@ jobs:
           if [[ -z "$COMMIT_MESSAGE" ]]; then
             echo "Commit message is empty. Exiting workflow."
             exit 1  # Terminate the workflow with a status code of 1
+          else 
+            echo "Sucess"
           fi
       - name: Checking head git commit message
         run: |
