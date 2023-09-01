@@ -3,7 +3,7 @@ name: Build check for RC merge
 on:
   pull_request:
     branches:
-      - 'rs_lambda_*'  # Adjust this pattern to match your rc_ branch naming convention
+      - 'rs_'  # Adjust this pattern to match your rc_ branch naming convention
   
 jobs:
   build:
@@ -14,6 +14,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
+      - name: Check Commit Messages
+        run: |
+          # Use Git commands to access and check commit messages
+          commit_messages=$(git log --format=%B origin/main..HEAD)
+  
+          # Use a regular expression to check for patterns
+          if [[ "$commit_messages" =~ (^CodeBuild|CodeBuild$) ]]; then
+            echo "Commit message matches the pattern. Proceeding with workflow."
+            # Add your workflow steps here
+          else
+            echo "Commit message does not match the pattern. Skipping workflow."
+            exit 1  # Terminate the workflow with a non-zero status code
+          fi
+      - name: testing 
+        run: |
+              echo "Testing"
+            
+       
+    
 
       
