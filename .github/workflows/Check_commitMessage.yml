@@ -1,4 +1,4 @@
-name: Build check for RC merge
+name: Check for Commit message
 
 on:
   pull_request:
