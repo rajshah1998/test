@@ -3,7 +3,7 @@ name: Check for Commit message
 on:
   pull_request:
     branches:
-      - 'rs_'  # Adjust this pattern to match your rc_ branch naming convention
+      - 'rs_*'  # Adjust this pattern to match your rc_ branch naming convention
   
 
 
