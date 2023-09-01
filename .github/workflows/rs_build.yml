@@ -28,9 +28,6 @@ jobs:
           echo "$(git show -s --format=%s)" 
           # Run the git show command and capture its output in an environment variable
           COMMIT_MESSAGE="$(git show -s --format=%s)"
-  
-          # Set the environment variable
-          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_EN
           
           # Check if the commit message starts with "CodeBuild"
           if [[ "$COMMIT_MESSAGE" == CodeBuild* ]]; then
