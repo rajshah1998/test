@@ -17,8 +17,10 @@ jobs:
       - name: Check Commit Messages
         run: |
           # Use Git commands to access and check commit messages
-          commit_messages=$(git log --format=%B origin/main..HEAD)
-  
+          #commit_messages=$(git log --format=%B origin/main..HEAD)
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          echo "Latest commit message: $COMMIT_MESSAGE"
+          
           # Use a regular expression to check for patterns
           if [[ "$commit_messages" =~ (^CodeBuild|CodeBuild$) ]]; then
             echo "Commit message matches the pattern. Proceeding with workflow."
