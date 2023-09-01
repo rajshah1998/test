@@ -18,6 +18,9 @@ jobs:
         run: |
           # Use Git commands to access and check commit messages
           #commit_messages=$(git log --format=%B origin/main..HEAD)
+          # Print the entire pull request event to see its structure
+          echo "${{ toJson(github.event) }}"
+          
           LATEST_COMMIT_MESSAGE="${{ github.event.pull_request.head.commit.message }}"
           echo "Latest commit message: $LATEST_COMMIT_MESSAGE"
           
