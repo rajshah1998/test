@@ -20,11 +20,16 @@ jobs:
           #commit_messages=$(git log --format=%B origin/main..HEAD)
           run: |
           # Parse the JSON event payload to get commit information
-          COMMITS=$(jq -r '.pull_request.commits_url' <<< ${{ toJson(github.event) }})
+      - name: Set up jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install jq -y
+
+          COMMITS_URL=$(jq -r '.pull_request.commits_url' <<< ${{ toJson(github.event) }})
           COMMIT_MESSAGES=()
 
           # Get commit messages for all commits associated with the pull request
-          for commit_url in $(curl -s "$COMMITS" | jq -r '.[].url'); do
+          for commit_url in $(curl -s "$COMMITS_URL" | jq -r '.[].url'); do
             COMMIT_MESSAGE=$(curl -s "$commit_url" | jq -r '.commit.message')
             COMMIT_MESSAGES+=("$COMMIT_MESSAGE")
           done
