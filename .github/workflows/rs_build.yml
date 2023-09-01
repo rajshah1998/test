@@ -43,3 +43,6 @@ jobs:
             echo "Commit message does not start or end with 'CodeBuild'. Exiting workflow."
             exit 1  # Terminate the workflow with a non-zero status code
           fi
+      - name: Checking head git commit message
+        run: |
+          echo "Testing the Message feature" 
