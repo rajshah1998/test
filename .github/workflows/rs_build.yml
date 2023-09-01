@@ -14,17 +14,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Check Commit Messages
-        run: |
-          # Use Git commands to access and check commit messages
-          #commit_messages=$(git log --format=%B origin/main..HEAD)
-          run: |
-          # Parse the JSON event payload to get commit information
+      
       - name: Set up jq
         run: |
           sudo apt-get update
           sudo apt-get install jq -y
-
+      - name: Check Commit Messages
+        run: |
           COMMITS_URL=$(jq -r '.pull_request.commits_url' <<< ${{ toJson(github.event) }})
           COMMIT_MESSAGES=()
 
