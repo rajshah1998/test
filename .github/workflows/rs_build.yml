@@ -18,10 +18,19 @@ jobs:
         run: |
           # Use Git commands to access and check commit messages
           #commit_messages=$(git log --format=%B origin/main..HEAD)
-          # Print the entire pull request event to see its structure
-          echo "${{ toJson(github.event) }}"
-          
-          LATEST_COMMIT_MESSAGE="${{ github.event.pull_request.head.commit.message }}"
+          run: |
+          # Parse the JSON event payload to get commit information
+          COMMITS=$(jq -r '.pull_request.commits_url' <<< ${{ toJson(github.event) }})
+          COMMIT_MESSAGES=()
+
+          # Get commit messages for all commits associated with the pull request
+          for commit_url in $(curl -s "$COMMITS" | jq -r '.[].url'); do
+            COMMIT_MESSAGE=$(curl -s "$commit_url" | jq -r '.commit.message')
+            COMMIT_MESSAGES+=("$COMMIT_MESSAGE")
+          done
+
+          # Get the latest commit message (the last element in the array)
+          LATEST_COMMIT_MESSAGE="${COMMIT_MESSAGES[-1]}"
           echo "Latest commit message: $LATEST_COMMIT_MESSAGE"
           
           # Use a regular expression to check for patterns
