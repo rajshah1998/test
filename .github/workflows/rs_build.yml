@@ -6,36 +6,39 @@ on:
       - 'rs_'  # Adjust this pattern to match your rc_ branch naming convention
   
 jobs:
-  build:
+  check-latest-commit-message:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write # This permission is required for requesting the web token without which you can't access the aws 
-      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
-      - name: Check Commit Messages
-        run: |
-          # Get the latest commit message
-          LATEST_COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
 
-          # Print the latest commit message
-          echo "Latest commit message: $LATEST_COMMIT_MESSAGE"
-          
-          # Use a regular expression to check for patterns
-          if [[ "$commit_messages" =~ (^CodeBuild|CodeBuild$) ]]; then
-            echo "Commit message matches the pattern. Proceeding with workflow."
-            # Add your workflow steps here
-          else
-            echo "Commit message does not match the pattern. Skipping workflow."
-            exit 1  # Terminate the workflow with a non-zero status code
-          fi
-      - name: testing 
+      - name: Get List of Commit SHAs
+        id: commit-list
         run: |
-              echo "Testing"
-            
-       
-    
+          # Get a list of commit SHAs excluding merge commits
+          COMMIT_LIST=$(git log --merges --invert-grep --pretty=format:%H..origin/main)
 
-      
+          # Set the output variable for later use
+          echo "::set-output name=commit-list::$COMMIT_LIST"
+
+      - name: Check Latest Commit Message
+        run: |
+          # Retrieve the list of commit SHAs from the previous step
+          COMMIT_LIST="${{ steps.commit-list.outputs.commit-list }}"
+
+          # Loop through the commit messages and check if any contain 'CodeBuild'
+          for commit_sha in $COMMIT_LIST; do
+            COMMIT_MESSAGE=$(git log -1 --pretty=format:%s $commit_sha)
+            echo "Commit message: $COMMIT_MESSAGE"
+
+            if [[ "$COMMIT_MESSAGE" =~ "CodeBuild" ]]; then
+              echo "Commit message contains 'CodeBuild'. Proceeding with workflow."
+              # Add your workflow steps here
+              exit 0
+            fi
+          done
+
+          # If no matching commit messages were found, skip the workflow
+          echo "None of the commit messages contain 'CodeBuild'. Skipping workflow."
+          exit 1  # Terminate the workflow with a non-zero status code
