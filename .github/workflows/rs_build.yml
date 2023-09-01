@@ -5,6 +5,8 @@ on:
     branches:
       - 'rs_'  # Adjust this pattern to match your rc_ branch naming convention
   
+
+
 jobs:
   check-latest-commit-message:
     runs-on: ubuntu-latest
@@ -18,14 +20,14 @@ jobs:
         run: |
           # Get a list of commit SHAs excluding merge commits
           COMMIT_LIST=$(git log --merges --invert-grep --pretty=format:%H..origin/main)
-
-          # Set the output variable for later use
-          echo "::set-output name=commit-list::$COMMIT_LIST"
+          
+          # Save the commit list to an environment file
+          echo "COMMIT_LIST=${COMMIT_LIST}" >> $GITHUB_ENV
 
       - name: Check Latest Commit Message
         run: |
-          # Retrieve the list of commit SHAs from the previous step
-          COMMIT_LIST="${{ steps.commit-list.outputs.commit-list }}"
+          # Retrieve the list of commit SHAs from the environment file
+          COMMIT_LIST="${COMMIT_LIST}"
 
           # Loop through the commit messages and check if any contain 'CodeBuild'
           for commit_sha in $COMMIT_LIST; do
