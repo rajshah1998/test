@@ -1,0 +1,39 @@
+name: Build check for RC merge
+
+on:
+  pull_request:
+    branches:
+      - 'rs_'  # Adjust this pattern to match your rc_ branch naming convention
+  
+
+
+jobs:
+  check-commit-message-IsEmpty:
+    name: 'Get commit message'
+    runs-on: ubuntu-latest
+    permissions:
+      # this permission should be set to be able use secrets.GITHUB_TOKEN
+      id-token: write
+      # not sure if this permission is necessary, just didn't try to remove it when testing
+      contents: read
+      # this permission should be set to be able get commits data by curl request
+      pull-requests: read
+    steps:
+      - name: Get repo
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Check Commit Message
+        run: |
+          # Retrieve the saved commit message from the environment variable
+          COMMIT_MESSAGE="${{ env.COMMIT_MESSAGE }}"
+          echo "Commit message: $COMMIT_MESSAGE"
+
+          # Check if the commit message is empty
+          if [[ -z "$COMMIT_MESSAGE" ]]; then
+            echo "Commit message is empty. Exiting workflow."
+            exit 1  # Terminate the workflow with a status code of 1
+          fi
+      - name: Checking head git commit message
+        run: |
+          echo "Testing the Message feature" 
