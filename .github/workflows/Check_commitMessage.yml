@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "$(git show -s --format=%s)"
           # Retrieve the saved commit message from the environment variable
-          COMMIT_MESSAGE="${{ env.COMMIT_MESSAGE }}"
+          COMMIT_MESSAGE="$(git show -s --format=%s)"
           echo "Commit message: $COMMIT_MESSAGE"
 
           # Check if the commit message is empty
