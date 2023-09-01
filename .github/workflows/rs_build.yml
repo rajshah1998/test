@@ -23,6 +23,23 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Print head git commit message
+      - name: Checking head git commit message
         run: |
           echo "$(git show -s --format=%s)" 
+          # Run the git show command and capture its output in an environment variable
+          COMMIT_MESSAGE="$(git show -s --format=%s)"
+  
+          # Set the environment variable
+          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_EN
+          
+          # Check if the commit message starts with "CodeBuild"
+          if [[ "$COMMIT_MESSAGE" == CodeBuild* ]]; then
+            echo "Commit message starts with 'CodeBuild'. Proceeding with workflow."
+            # Add your workflow steps here
+          elif [[ "$COMMIT_MESSAGE" == *CodeBuild ]]; then
+            echo "Commit message ends with 'CodeBuild'. Proceeding with workflow."
+            # Add your workflow steps here
+          else
+            echo "Commit message does not start or end with 'CodeBuild'. Exiting workflow."
+            exit 1  # Terminate the workflow with a non-zero status code
+          fi
