@@ -25,6 +25,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Check Commit Message
         run: |
+          echo "$(git show -s --format=%s)"
           # Retrieve the saved commit message from the environment variable
           COMMIT_MESSAGE="${{ env.COMMIT_MESSAGE }}"
           echo "Commit message: $COMMIT_MESSAGE"
