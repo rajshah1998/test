@@ -9,38 +9,31 @@ on:
 
 jobs:
   check-latest-commit-message:
+    name: 'Get commit message'
     runs-on: ubuntu-latest
-
+    permissions:
+      # this permission should be set to be able use secrets.GITHUB_TOKEN
+      id-token: write
+      # not sure if this permission is necessary, just didn't try to remove it when testing
+      contents: read
+      # this permission should be set to be able get commits data by curl request
+      pull-requests: read
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Get List of Commit SHAs
-        id: commit-list
+      - name: Get commits
+        env:
+          # github URL to list commits
+          COMMITS_URL: ${{ github.event.pull_request.commits_url }}
         run: |
-          # Get a list of commit SHAs excluding merge commits
-          COMMIT_LIST=$(git log --merges --invert-grep --pretty=format:%H..origin/main)
-          
-          # Save the commit list to an environment file
-          echo "COMMIT_LIST=${COMMIT_LIST}" >> $GITHUB_ENV
-
-      - name: Check Latest Commit Message
-        run: |
-          # Retrieve the list of commit SHAs from the environment file
-          COMMIT_LIST="${COMMIT_LIST}"
-
-          # Loop through the commit messages and check if any contain 'CodeBuild'
-          for commit_sha in $COMMIT_LIST; do
-            COMMIT_MESSAGE=$(git log -1 --pretty=format:%s $commit_sha)
-            echo "Commit message: $COMMIT_MESSAGE"
-
-            if [[ "$COMMIT_MESSAGE" =~ "CodeBuild" ]]; then
-              echo "Commit message contains 'CodeBuild'. Proceeding with workflow."
-              # Add your workflow steps here
-              exit 0
-            fi
-          done
-
-          # If no matching commit messages were found, skip the workflow
-          echo "None of the commit messages contain 'CodeBuild'. Skipping workflow."
-          exit 1  # Terminate the workflow with a non-zero status code
+          if [ "${COMMITS_URL}x" != "x" ]; then
+            # get commits list and pick up last one by jq
+            # caution: only 100 commits will be taken by curl
+            # if your PR has more than 100 commits
+            # you have to set page query parameter
+            # and request last page commits
+            # API URL details: https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-commits-on-a-pull-request
+            LAST_MSG=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${COMMITS_URL}?per_page=100" | jq -r .[-1].commit.message)
+            # set environment variable
+            echo "LAST_MSG=${LAST_MSG}" >> "${GITHUB_ENV}"
+          else
+            echo 'LAST_MSG=' >> "${GITHUB_ENV}"
+          fi
