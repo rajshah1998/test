@@ -18,8 +18,8 @@ jobs:
         run: |
           # Use Git commands to access and check commit messages
           #commit_messages=$(git log --format=%B origin/main..HEAD)
-          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
-          echo "Latest commit message: $COMMIT_MESSAGE"
+          LATEST_COMMIT_MESSAGE="${{ github.event.pull_request.head.commit.message }}"
+          echo "Latest commit message: $LATEST_COMMIT_MESSAGE"
           
           # Use a regular expression to check for patterns
           if [[ "$commit_messages" =~ (^CodeBuild|CodeBuild$) ]]; then
