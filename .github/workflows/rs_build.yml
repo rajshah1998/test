@@ -9,7 +9,7 @@ on:
 
 jobs:
   check-latest-commit-message:
-    name: 'Get commit message'
+    name: 'Get commit message for keywords'
     runs-on: ubuntu-latest
     permissions:
       # this permission should be set to be able use secrets.GITHUB_TOKEN
